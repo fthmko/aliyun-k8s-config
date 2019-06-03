@@ -1,0 +1,40 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: alicloud-nas-controller
+  namespace: kube-system
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: alicloud-nas-controller
+    spec:
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists
+        key: node-role.kubernetes.io/master
+      - effect: NoSchedule
+        operator: Exists
+        key: node.cloudprovider.kubernetes.io/uninitialized
+      serviceAccount: admin
+      containers:
+        - name: alicloud-nas-controller
+          image: registry.cn-hangzhou.aliyuncs.com/acs/alicloud-nas-controller:v3.1.0-k8s1.11
+          volumeMounts:
+          - mountPath: /persistentvolumes
+            name: nfs-client-root
+          env:
+            - name: PROVISIONER_NAME
+              value: alicloud/nas
+            - name: NFS_SERVER
+              value: YOURS.cn-shenzhen.nas.aliyuncs.com # 你的阿里云nas地址
+            - name: NFS_PATH
+              value: /mypath # nas映射目录
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: YOURS.cn-shenzhen.nas.aliyuncs.com # 你的阿里云nas地址
+            path: /mypath # nas映射目录

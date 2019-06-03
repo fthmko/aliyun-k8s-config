@@ -1,0 +1,20 @@
+{
+  "CN": "server.dbb.cluster.local",
+  "hosts": [
+    "server.dbb.cluster.local",
+    "127.0.0.1"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",
+      "L": "sz",
+      "O": "furong",
+      "OU": "Consul",
+      "ST": "gd"
+    }
+  ]
+}
