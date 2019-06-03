@@ -49,12 +49,14 @@ metadata:
   namespace: myproj
   labels:
     app: consul
+    component: server
 spec:
   podManagementPolicy: "Parallel"
   serviceName: consul
   selector:
     matchLabels:
       app: consul
+      component: server
   replicas: 2
   template:
     metadata:
@@ -74,6 +76,10 @@ spec:
                     operator: In
                     values:
                       - consul
+                  - key: component
+                    operator: In
+                    values:
+                      - server
               topologyKey: kubernetes.io/hostname
       terminationGracePeriodSeconds: 10
       securityContext:

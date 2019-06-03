@@ -122,4 +122,27 @@ data:
       "verify_server_hostname": true,
       "ui": true
     }
-
+  client.json: |
+    {
+      "bind_addr": "0.0.0.0",
+      "ca_file": "/etc/tls/ca.pem",
+      "cert_file": "/etc/tls/consul.pem",
+      "client_addr": "0.0.0.0",
+      "disable_host_node_id": true,
+      "data_dir": "/consul/data",
+      "datacenter": "myproj",
+      "domain": "cluster.local",
+      "key_file": "/etc/tls/consul-key.pem",
+      "ports": {
+        "https": 8443
+      },
+      "retry_join": ["consul.myproj.svc.cluster.local"],
+      "server": false,
+      "telemetry": {
+        "prometheus_retention_time": "5m"
+      },
+      "verify_incoming": true,
+      "verify_outgoing": true,
+      "verify_server_hostname": true,
+      "ui": false
+    }

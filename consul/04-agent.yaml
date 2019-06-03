@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: consul-agent
+  namespace: myproj
+  labels:
+    app: consul
+spec:
+  selector:
+    matchLabels:
+      app: consul
+      component: agent
+  template:
+    metadata:
+      labels:
+        app: consul
+        component: agent
+    spec:
+      terminationGracePeriodSeconds: 10
+      securityContext:
+        fsGroup: 1000
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+        - name: consul
+          image: consul:1.5
+          resources:
+            limits:
+              cpu: 1
+              memory: 512Mi
+            requests:
+              cpu: 0.1
+              memory: 128Mi
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: GOSSIP_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: consul
+                  key: gossip-encryption-key
+          args:
+            - "agent"
+            - "-advertise=$(POD_IP)"
+            - "-config-file=/etc/consul/config/client.json"
+            - "-encrypt=$(GOSSIP_ENCRYPTION_KEY)"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/consul/config
+            - name: tls
+              mountPath: /etc/tls
+          ports:
+            - containerPort: 8400
+              name: alt-port
+            - containerPort: 53
+              name: udp-port
+            - containerPort: 8443
+              name: https-port
+            - containerPort: 8080
+              name: http-port
+            - containerPort: 8301
+              name: serflan
+            - containerPort: 8302
+              name: serfwan
+            - containerPort: 8600
+              name: consuldns
+            - containerPort: 8300
+              name: server
+      volumes:
+        - name: config
+          configMap:
+            name: consul
+        - name: tls
+          secret:
+            secretName: consul
